@@ -1,0 +1,39 @@
+version: '3.1'
+
+services:
+    db:
+        image: mysql:5.7
+        ports:
+            - "3306:3306"
+        env_file:
+            - ./docker/db/.env
+        volumes:
+            - ./docker/db/data:/var/lib/mysql:rw
+
+    php:
+        build: ./docker/php
+        volumes:
+            - ./docker/php/app.ini:/usr/local/etc/php/conf.d/docker-php-ext-app.ini:ro
+            - ./docker/logs/app:/var/www/app/var/log:cached
+            - .:/var/www/app:cached
+        working_dir: /var/www/app
+        links:
+            - db
+        env_file:
+            - ./docker/php/.env
+
+    webserver:
+        image: nginx:1
+        depends_on:
+            - php
+        volumes:
+            - ./docker/webserver/app.conf:/etc/nginx/conf.d/default.conf:ro
+            - ./docker/logs/webserver/:/var/log/nginx:cached
+            - .:/var/www/app:ro
+        ports:
+            - "80:80"
+
+    mailcatcher:
+        image: schickling/mailcatcher
+        ports:
+            - "1080:1080"

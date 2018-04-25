@@ -34,4 +34,4 @@ RUN curl -L http://cs.sensiolabs.org/download/php-cs-fixer-v2.phar -o /usr/bin/p
 RUN php-cs-fixer self-update
 
 # mjml
-RUN npm install -g mjml
+#RUN npm install -g mjml
